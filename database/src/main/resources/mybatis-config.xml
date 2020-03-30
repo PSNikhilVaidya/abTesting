@@ -6,7 +6,7 @@
 	<properties resource='jdbc.properties' />
 	<typeAliases>
 		
-        <typeAlias type="com.ocr.models.OCR" alias="OCR"/>
+        <typeAlias type="com.abtesting.models.ABTesting" alias="ABTesting"/>
         
         
 	</typeAliases>
@@ -26,7 +26,7 @@
 		</environment>
 	</environments>
 	<mappers>		
-		<mapper resource='OCRMapper.xml'/>
+		<mapper resource='ABTestingMapper.xml'/>
 		
 	</mappers>
 </configuration>

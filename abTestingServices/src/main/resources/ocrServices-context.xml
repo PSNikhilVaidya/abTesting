@@ -1,0 +1,90 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+   xmlns:context="http://www.springframework.org/schema/context"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+   xsi:schemaLocation="
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+      http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+      http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd"
+   default-lazy-init="false">
+
+  <!-- CXF resources  -->
+  <import resource="classpath:META-INF/cxf/cxf.xml" />
+  <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+  <import resource="classpath*:/spring/database-setting.xml" />
+
+  <context:annotation-config />
+
+  <context:component-scan base-package="com.abtesting.rest.apis.serviceImpl" />
+
+  <jaxrs:server id="ABTestingServices" address="/"> 
+     <jaxrs:inInterceptors>
+        <ref bean="validationInInterceptor" />
+    </jaxrs:inInterceptors>
+    <jaxrs:outInterceptors>
+        <ref bean="validationOutInterceptor" />
+    </jaxrs:outInterceptors>
+
+    <jaxrs:serviceBeans> 
+      <ref bean="abtestingservices" />
+      <ref bean="swaggerResourceJSON" />
+    </jaxrs:serviceBeans> 
+
+    <jaxrs:providers> 
+      <ref bean="jsonProvider" />
+      <ref bean="resourceWriter" />
+	  <ref bean="apiWriter" />
+	  <ref bean="searchContextProvider" />
+	  <ref bean="validationProvider" />
+	  <ref bean="exceptionMapper" />
+    </jaxrs:providers> 
+    <jaxrs:extensionMappings>
+      <entry key="json" value="application/json" />
+      <entry key="xml" value="application/xml" />
+    </jaxrs:extensionMappings>
+  </jaxrs:server>
+
+  <!-- JSON mapper --> 
+
+  <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider" >
+      <constructor-arg ref="objectMapper"></constructor-arg>
+  </bean>
+  
+  <bean id="contextProvder" class="com.los.utility.ContextProvider" ></bean>
+   
+  <bean id="objectMapper" class="org.codehaus.jackson.map.ObjectMapper">
+      <property name="serializationInclusion">
+      		        <value type="org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion">NON_NULL</value>
+      </property>
+   </bean>
+
+   	<!-- Swagger API listing resource -->
+
+	<bean id="swaggerResourceJSON"
+		class="com.wordnik.swagger.jaxrs.listing.ApiListingResourceJSON" />
+	<!-- Swagger writers -->
+	<bean id="resourceWriter"
+		class="com.wordnik.swagger.jaxrs.listing.ResourceListingProvider" />
+	<bean id="apiWriter"
+		class="com.wordnik.swagger.jaxrs.listing.ApiDeclarationProvider" />
+	<bean id="searchContextProvider" class="org.apache.cxf.jaxrs.ext.search.SearchContextProvider" />
+	<bean id="swaggerConfig" class="com.wordnik.swagger.jaxrs.config.BeanConfig">
+		<property name="resourcePackage" value="com.lead.rest.apis.serviceImpl" />
+    	<property name="basePath" value="/abtestingservices/services"/>
+        <property name="title" value="Swagger UI for AB Testing Services" />
+        <property name="description"  value="API Documentation for all the AB Testing Services" />
+		<property name="version" value="v1" />
+		<property name="scan" value="true" />
+	</bean>
+
+	<bean id="validationProvider" class="org.apache.cxf.validation.BeanValidationProvider" />
+	<bean id="exceptionMapper" class="org.apache.cxf.jaxrs.validation.ValidationExceptionMapper"/>
+
+	<bean id="validationInInterceptor" class="org.apache.cxf.jaxrs.validation.JAXRSBeanValidationInInterceptor">
+    	<property name="provider" ref="validationProvider" />
+	</bean>
+
+
+	<bean id="validationOutInterceptor" class="org.apache.cxf.jaxrs.validation.JAXRSBeanValidationOutInterceptor">
+    	<property name="provider" ref="validationProvider" />
+	</bean>
+</beans>

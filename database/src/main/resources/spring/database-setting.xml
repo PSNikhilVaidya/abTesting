@@ -11,6 +11,6 @@
    
    <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>
 
-	<bean id="OCRSvc" class="com.ocr.database.service.OCRSvc"></bean>
+	<bean id="ABTestingSvc" class="com.abtesting.database.service.ABTestingSvc"></bean>
 	
 </beans>
